@@ -31,6 +31,20 @@ void writeChunk(Chunk* chunk, uint8_t byte, int line) {
     chunk->count++;
 }
 
+void writeConstant(Chunk* chunk, Value value, int line) {
+    int constant = addConstant(chunk, value);
+
+    if (constant < 256) {
+        writeChunk(chunk, OP_CONSTANT, line);
+        writeChunk(chunk, (uint8_t)constant, line);
+    } else {
+        writeChunk(chunk, OP_CONSTANT_LONG, line);
+        writeChunk(chunk, (uint8_t)(constant & 0xFF), line);
+        writeChunk(chunk, (uint8_t)((constant >> 8) & 0xFF), line);
+        writeChunk(chunk, (uint8_t)((constant >> 16) & 0xFF), line);
+    }
+}
+
 int addConstant(Chunk* chunk, Value value) {
     writeValueArray(&chunk->constants, value);
     return chunk->constants.count - 1;
