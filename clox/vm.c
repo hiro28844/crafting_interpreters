@@ -27,6 +27,10 @@ Value pop() {
     return *vm.stackTop;
 }
 
+void negate() {
+    *(vm.stackTop - 1) = -(*(vm.stackTop - 1));
+}
+
 static InterpretResult run() {
 #define READ_BYTE() (*vm.ip++)
 #define READ_CONSTANT() (vm.chunk->constants.values[READ_BYTE()])
@@ -59,7 +63,7 @@ static InterpretResult run() {
             case OP_SUBTRACT: BINARY_OP(-); break;
             case OP_MULTIPLY: BINARY_OP(*); break;
             case OP_DIVIDE:   BINARY_OP(/); break;
-            case OP_NEGATE:   push(-pop()); break;
+            case OP_NEGATE:   negate(); break;
             case OP_RETURN: {
                 printValue(pop());
                 printf("\n");
